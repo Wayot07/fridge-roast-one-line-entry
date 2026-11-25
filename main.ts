@@ -4,7 +4,7 @@
 // Writes exactly one roast line (1-200 chars, single line, no trailing
 // newline) to /output/entry.txt and validates it before exiting.
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const LINE =
   "My fridge's ice maker sounds like a rockslide and drops a single cube, like it's charging rent for the noise.";
@@ -24,4 +24,9 @@ if (LINE.includes("\n") || LINE.includes("\r")) {
 
 mkdirSync("/output", { recursive: true });
 writeFileSync(OUTPUT_PATH, LINE, "utf8");
+
+// Read back and verify the written bytes are identical to the entry.
+if (!readFileSync(OUTPUT_PATH).equals(Buffer.from(LINE, "utf8"))) {
+  throw new Error("entry.txt bytes differ from the entry line");
+}
 console.log(`wrote ${LINE.length} chars to ${OUTPUT_PATH}`);
